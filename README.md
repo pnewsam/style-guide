@@ -133,6 +133,16 @@ const FlavorsTableRow = () => {
 
 ## 🌲 COMPONENT ARCHITECTURE
 
+### Branch High Up
+
+Rather than 
+
+```jsx
+const Tell = () => (<div>
+  {}
+</div>);
+```
+
 ## 🧩 COMPONENT DESIGN
 
 ### Functional Over Class
