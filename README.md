@@ -12,6 +12,12 @@ An opinionated guide on best practices in React in 2025. It goes so far as to re
 - 🧠 Reduce **Cognitive Load**
 - 🪢 Avoid **Coupling**
 
+**Recommended Libraries**
+
+- `jotai`
+- `@tanstack/react-query`
+- `zod`
+
 ## 📂 DIRECTORY STRUCTURE
 
 ```
@@ -35,25 +41,27 @@ src
 Package imports should come first, followed by top-level directories, and then local imports. Use a prettier plugin like [prettier-plugin-sort-imports](https://github.com/trivago/prettier-plugin-sort-imports) to automate this.
 
 ```jsx
-import { useState } from 'react';
+import { useState } from "react";
 
-import { Button } from '@/components/button';
+import { Button } from "@/components/button";
 
-import { SubmitButton } from './SubmitButton';
+import { SubmitButton } from "./SubmitButton";
 ```
 
 ### State/Hooks, Then Derived State & Business Logic, Then JSX
 
 ```tsx
 const DatabaseList = ({ databases }) => {
-  // State
-  const [query, setQuery] = useState('');
+  // 1. State
+  const [query, setQuery] = useState("");
 
-  // Derived State & Business Logic
+  // 2. Derived State & Business Logic
   const handleChange = (e) => setQuery(e.target.value);
-  const filtered = databases.filter((db) => db.name.toLowerCase().includes(query.toLowerCase()));
+  const filtered = databases.filter((db) =>
+    db.name.toLowerCase().includes(query.toLowerCase())
+  );
 
-  // JSX
+  // 3. JSX
   return (
     <div>
       <input value={query} onChange={handleChange} />
@@ -69,7 +77,7 @@ const DatabaseList = ({ databases }) => {
 
 ### Avoid Default Exports
 
-Default exports introduce the possibility of renames.
+Default exports introduce the possibility of renames, and should be avoided.
 
 ```tsx
 // DO THIS ✅
@@ -77,7 +85,15 @@ export const Button = ({ children }) => <button>{children}</button>;
 
 // NOT THIS ❌
 const Button = ({ children }) => <button>{children}</button>;
-export default Button
+export default Button;
+```
+
+```tsx
+// ENFORCES NAMING CONSISTENCY ✅
+import { Button } from "@/components/Button";
+
+// ENCOURAGES NAMING INCONSISTENCIES  ❌
+import MyButton from "@/components/Button";
 ```
 
 ## STATE MANAGEMENT
@@ -93,17 +109,24 @@ Use `jotai` for independent, atomic state that must be available globally. Commo
 
 ```tsx
 // /state/atoms/user.ts
-import { atom } from 'jotai';
-```
-
-```tsx
-// /components/user-menu.tsx
-import { useAtom } from 'jotai';
+import { atom } from "jotai";
 
 const userAtom = atom(user);
 
+// /components/layout.tsx
+const Layout = () => {
+  const [user, setUser] = useAtom(userAtom);
+
+  if (!user) return redirect("/login");
+
+  return <main>{/* ... */}</main>;
+};
+
+// /components/user-menu.tsx
+import { useAtom } from "jotai";
 const UserMenu = () => {
   const [user, setUser] = useAtom();
+  return <div></div>;
 };
 ```
 
@@ -135,35 +158,131 @@ const FlavorsTableRow = () => {
 
 ### Branch High Up
 
-Rather than 
+Rather than
 
 ```jsx
-const Tell = () => (<div>
-  {}
-</div>);
+const Tell = () => <div>{}</div>;
 ```
 
 ## 🧩 COMPONENT DESIGN
 
 ### Functional Over Class
 
+```
+
+```
+
 ### One Job
+
+Components should adhere to the principle of **single responsibility**.
+
+```tsx
+// DO THIS ✅
+
+// NOT THIS ❌
+```
+
+> References
+>
+> - React Docs
+
+### Short Names Locally, Long Names Globally
+
+A name should only be as long as it needs to be.
 
 ### Small Components
 
-### Composition Over
-
-### Keep JSX in the Return Statement
-
-Avoid creating render functions
+Components should be under 50 lines if possible, and under 200 lines if not.
 
 ```tsx
+// DO THIS ✅
 
+// NOT THIS ❌
+```
+
+### Composition Over
+
+```tsx
+// DO THIS ✅
+
+// NOT THIS ❌
+```
+
+### If It Returns JSX, Make It A Component
+
+Avoid creating render functions that return JSX.
+
+```tsx
+// DON'T DO THIS ❌
+const CarsTable = () => {
+  const renderRow = ({ make, model }) => {
+    return (
+      <tr>
+        <td>{make}</td>
+        <td>{model}</td>
+      </tr>
+    )
+  }
+
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Make</th>
+          <th>Model</th>
+        </tr>
+      </thead>
+      <tbody>
+        {cars.map(car => renderRow(car))}
+      </tbody>
+    <table>
+  )
+}
+
+// DO THIS ✅
+
+// CarsTableRow.tsx
+const CarsTableRow = ({ make, model }) => (
+  <tr>
+    <td>{make}</td>
+    <td>{model}</td>
+  </tr>
+)
+
+// CarsTable.tsx
+import { CarsTableRow } from "./CarsTableRow"
+
+const CarsTable = () => {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Make</th>
+          <th>Model</th>
+        </tr>
+      </thead>
+      <tbody>
+        {cars.map(car => <CarsTableRow {...car} />)}
+      </tbody>
+    <table>
+  )
+}
 ```
 
 ## 🎨 STYLING
 
+## Prefer Tailwind
+
+Tailwind
+
+```
+
+```
+
 ### CSS Over JS
 
-In most cases, CSS will be more performant than JS. Opt to use CSS wherever possible.
+CSS is usually more performant than Javascript. Opt to use CSS wherever possible.
 
+```
+
+```
