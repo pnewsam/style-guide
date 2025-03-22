@@ -3,21 +3,21 @@
 These principles should apply to any React project, whether you are working in big NextJS app or a minimal SPA using Vite.
 
 - [Core](#core)
-  - [Project Structure](#project-structure)
-  - [File Naming](#file-naming)
-  - [Component Naming](#component-naming)
-  - [Tree Design](#tree-design)
-    - [Keep State Low](#keep-state-low)
-    - [Branch High Up](#branch-high-up)
-  - [Component Structure](#component-structure)
-  - [Component Design](#component-design)
-    - [Small Components](#small-components)
-    - [Single Responsibility](#single-responsibility)
-    - [Composition Over Configuration](#composition-over-configuration)
-    - [Reusable Logic in Hooks](#reusable-logic-in-hooks)
-    - [No Render Functions](#no-render-functions)
+  - [1. Project Structure](#1-project-structure)
+  - [2. File Naming](#2-file-naming)
+  - [3. Component Naming](#3-component-naming)
+  - [4. Tree Design](#4-tree-design)
+    - [4.1. Keep State Low](#41-keep-state-low)
+    - [4.2. Branch High Up](#42-branch-high-up)
+  - [5. Component Structure](#5-component-structure)
+  - [6. Component Design](#6-component-design)
+    - [6.1 Small Components](#61-small-components)
+    - [6.2 Single Responsibility](#62-single-responsibility)
+    - [6.3 Composition Over Configuration](#63-composition-over-configuration)
+    - [6.4 Reusable Logic in Hooks](#64-reusable-logic-in-hooks)
+    - [6.5 No Render Functions](#65-no-render-functions)
 
-## Project Structure
+## 1. Project Structure
 
 ```
 src
@@ -40,7 +40,7 @@ src
 +  |
 ```
 
-## File Naming
+## 2. File Naming
 
 Name files in **kebab-case**. Projects such as NodeJS and ShadCN/UI have adopted kebab-case for their code. Kebab-case is compatible across different operating systems.
 
@@ -54,19 +54,19 @@ AlertDialog.tsx
 
 > Reference: https://x.com/rwieruch/status/1836434009041035635
 
-## Component Naming
+## 3. Component Naming
 
 **Short Locally, Long Globally**
 
 > Reference: https://x.com/_georgemoller/status/1892197768053002581
 
-## Tree Design
+## 4. Tree Design
 
-### Keep State Low
+### 4.1. Keep State Low
 
 State should be be lifted only as high in the component tree as necessary.
 
-### Branch High Up
+### 4.2. Branch High Up
 
 Rather than
 
@@ -74,7 +74,7 @@ Rather than
 const Tell = () => <div>{}</div>;
 ```
 
-## Component Structure
+## 5. Component Structure
 
 **Imports** should be ordered by relative distance. Absolute imports first, project imports second, then relative imports last. Use a prettier plugin like [prettier-plugin-sort-imports](https://github.com/trivago/prettier-plugin-sort-imports) to automate this.
 
@@ -113,9 +113,9 @@ const DatabaseList = ({ databases }) => {
 export { DatabaseList };
 ```
 
-## Component Design
+## 6. Component Design
 
-### Small Components
+### 6.1 Small Components
 
 Components should be small -- under 50 lines if possible, and under 200 lines if not.
 
@@ -143,7 +143,7 @@ const FlavorsTableRow = () => {
 }
 ```
 
-### Single Responsibility
+### 6.2 Single Responsibility
 
 Components should adhere to the principle of **self-containment**, and **single responsibility**.
 
@@ -165,11 +165,11 @@ import { Button } from "@/components/Button";
 import MyButton from "@/components/Button";
 ```
 
-### Composition Over Configuration
+### 6.3 Composition Over Configuration
 
-### Reusable Logic in Hooks
+### 6.4 Reusable Logic in Hooks
 
-### No Render Functions
+### 6.5 No Render Functions
 
 If it returns JSX, it should be a component. And if it's a component, it should almost always be in its own file.
 
