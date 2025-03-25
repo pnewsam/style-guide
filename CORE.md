@@ -9,7 +9,7 @@ These principles should apply to any React project, whether you are working in b
   - [4. Tree Design](#4-tree-design)
     - [4.1. Keep State Low](#41-keep-state-low)
     - [4.2. Branch High Up](#42-branch-high-up)
-  - [5. Component Structure](#5-component-structure)
+  - [5. Component Layout](#5-component-layout)
   - [6. Component Design](#6-component-design)
     - [6.1 Small Components](#61-small-components)
     - [6.2 Single Responsibility](#62-single-responsibility)
@@ -58,6 +58,10 @@ AlertDialog.tsx
 
 **Short Locally, Long Globally**
 
+```tsx
+const CarsListHeader = () => {};
+```
+
 > Reference: https://x.com/_georgemoller/status/1892197768053002581
 
 ## 4. Tree Design
@@ -74,7 +78,7 @@ Rather than
 const Tell = () => <div>{}</div>;
 ```
 
-## 5. Component Structure
+## 5. Component Layout
 
 **Imports** should be ordered by relative distance. Absolute imports first, project imports second, then relative imports last. Use a prettier plugin like [prettier-plugin-sort-imports](https://github.com/trivago/prettier-plugin-sort-imports) to automate this.
 
@@ -117,7 +121,7 @@ export { DatabaseList };
 
 ### 6.1 Small Components
 
-Components should be small -- under 50 lines if possible, and under 200 lines if not.
+Components should be small -- under 50 lines if possible, and under 200 lines if not. It is only very rarely that they need to be longer than ~200 lines.
 
 ```tsx
 // DO THIS ✅
@@ -167,21 +171,62 @@ import MyButton from "@/components/Button";
 
 ### 6.3 Composition Over Configuration
 
+Rather than "configuring" a component by passing down many props, "compose" it by breaking it up into smaller subcomponents, each with its own props.
+
+Besides resulting in smaller, self-contained components that are easier to reason about, update, and replace, this also more effectively leverages Reacts reconciliation to minimize re-renders.
+
+```tsx
+// Do this ✅
+const ItemsTable = ({ items }) => {
+  const [selectedItem, setSelectedItem] = useState(null);
+  return (
+    <Table>
+      <TableHeader title="Items" subtitle={`${items.length} total`} />
+      <TableBody items={items} selectedItem={selectedItem} />
+      <TableFooter numItems={items.length} pageSize={10} />
+    </Table>
+  );
+};
+
+// Not this ❌
+const ItemsTable = ({ items }) => {
+  const [selectedItem, setSelectedItem] = useState(null);
+  return (
+    <Table
+      title="Items"
+      subtitle={`${items.length} total`}
+      selectedItem={selectedItem}
+      items={items}
+      numItems={items.length}
+      pageSize={10}
+    />
+  );
+};
+```
+
 ### 6.4 Reusable Logic in Hooks
 
 ### 6.5 No Render Functions
+
+Render functions are functions that return JSX but are broken out from the component's return statement. Although they
 
 If it returns JSX, it should be a component. And if it's a component, it should almost always be in its own file.
 
 ```tsx
 // DON'T DO THIS ❌
 const CarsTable = () => {
-  const renderRow = ({ make, model }) => {
+  const [cars, setCars] = useState([]);
+
+  const renderRows = () => {
     return (
-      <tr>
-        <td>{make}</td>
-        <td>{model}</td>
-      </tr>
+      <>
+        {cars.map((car) => (
+          <tr>
+            <td>{car.make}</td>
+            <td>{car.model}</td>
+          </tr>
+        ))}
+      </>
     )
   }
 
@@ -194,21 +239,19 @@ const CarsTable = () => {
         </tr>
       </thead>
       <tbody>
-        {cars.map(car => renderRow(car))}
+        {renderRows}
       </tbody>
     <table>
   )
 }
-```
 
-```tsx
 // DO THIS ✅
 
 // CarsTableRow.tsx
-const CarsTableRow = ({ make, model }) => (
+const CarsTableRow = ({ car }) => (
   <tr>
-    <td>{make}</td>
-    <td>{model}</td>
+    <td>{car.make}</td>
+    <td>{car.model}</td>
   </tr>
 )
 
@@ -225,7 +268,7 @@ const CarsTable = () => {
         </tr>
       </thead>
       <tbody>
-        {cars.map(car => <CarsTableRow {...car} />)}
+        {cars.map(car => <CarsTableRow car={car} />)}
       </tbody>
     <table>
   )
