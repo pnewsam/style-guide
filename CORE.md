@@ -10,12 +10,16 @@ These principles should apply to any React project, whether you are working in b
     - [4.1. Keep State Low](#41-keep-state-low)
     - [4.2. Branch High Up](#42-branch-high-up)
   - [5. Component Layout](#5-component-layout)
+    - [5.1. Sort Imports by Distance](#51-sort-imports-by-distance)
+    - [5.2 State, Derived State, then JSX](#52-state-derived-state-then-jsx)
+    - [5.3. Avoid Default Exports](#53-avoid-default-exports)
   - [6. Component Design](#6-component-design)
     - [6.1 Small Components](#61-small-components)
     - [6.2 Single Responsibility](#62-single-responsibility)
     - [6.3 Composition Over Configuration](#63-composition-over-configuration)
     - [6.4 Reusable Logic in Hooks](#64-reusable-logic-in-hooks)
     - [6.5 No Render Functions](#65-no-render-functions)
+    - [6.6 Memoize Defensively](#66-memoize-defensively)
 
 ## 1. Project Structure
 
@@ -80,9 +84,9 @@ const Tell = () => <div>{}</div>;
 
 ## 5. Component Layout
 
-**Imports** should be ordered by relative distance. Absolute imports first, project imports second, then relative imports last. Use a prettier plugin like [prettier-plugin-sort-imports](https://github.com/trivago/prettier-plugin-sort-imports) to automate this.
+### 5.1. Sort Imports by Distance
 
-**Exports** should be always be named, as default exports introduce renames.
+**Imports** should be ordered by relative distance. Absolute imports first, project imports second, then relative imports last. Use a prettier plugin like [prettier-plugin-sort-imports](https://github.com/trivago/prettier-plugin-sort-imports) to automate this.
 
 ```tsx
 // Absolute, Project-Wide, then Relative Imports
@@ -91,7 +95,11 @@ import { useState } from "react";
 import { Button } from "@/components/button";
 
 import { SubmitButton } from "./SubmitButton";
+```
 
+### 5.2 State, Derived State, then JSX
+
+```tsx
 // State, then Derived State, then JSX
 const DatabaseList = ({ databases }) => {
   const [query, setQuery] = useState("");
@@ -117,6 +125,29 @@ const DatabaseList = ({ databases }) => {
 export { DatabaseList };
 ```
 
+### 5.3. Avoid Default Exports
+
+**Exports** should be always be named, because default exports may introduce introduce renames.
+
+```tsx
+// Do this ✅ (Encourages naming consistency)
+
+// button.tsx
+const Button = () => {...}
+export { Button }
+
+// other-component.tsx
+import { Button } from "@/components/Button";
+
+// Don't do this ❌
+
+// button.tsx
+export default Button;
+
+// other-component.tsx
+import MyButton from "@/components/Button";
+```
+
 ## 6. Component Design
 
 ### 6.1 Small Components
@@ -124,9 +155,9 @@ export { DatabaseList };
 Components should be small -- under 50 lines if possible, and under 200 lines if not. It is only very rarely that they need to be longer than ~200 lines.
 
 ```tsx
-// DO THIS ✅
+// Do this ✅
 
-// NOT THIS ❌
+// Not this ❌
 ```
 
 ```tsx
@@ -152,22 +183,14 @@ const FlavorsTableRow = () => {
 Components should adhere to the principle of **self-containment**, and **single responsibility**.
 
 ```tsx
-// DO THIS ✅
+// Do this ✅
 
-// NOT THIS ❌
+// Not this ❌
 ```
 
 > References
 >
 > - React Docs
-
-```tsx
-// Encourages naming consistency ✅
-import { Button } from "@/components/Button";
-
-// Encourages inconsistencies in naming ❌
-import MyButton from "@/components/Button";
-```
 
 ### 6.3 Composition Over Configuration
 
@@ -213,7 +236,7 @@ Render functions are functions that return JSX but are broken out from the compo
 If it returns JSX, it should be a component. And if it's a component, it should almost always be in its own file.
 
 ```tsx
-// DON'T DO THIS ❌
+// Don't do this ❌
 const CarsTable = () => {
   const [cars, setCars] = useState([]);
 
@@ -245,7 +268,7 @@ const CarsTable = () => {
   )
 }
 
-// DO THIS ✅
+// Do this ✅
 
 // CarsTableRow.tsx
 const CarsTableRow = ({ car }) => (
@@ -274,3 +297,11 @@ const CarsTable = () => {
   )
 }
 ```
+
+### 6.6 Memoize Defensively
+
+With smaller apps, it may not be necessary to memoize.
+
+References:
+
+-
