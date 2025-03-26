@@ -7,6 +7,12 @@
 - `jotai`
 - `@tanstack/react-query`
 
+## 1.1 Navigation State in the URL
+
+Navigation state should always be stored in the URL.
+
+##
+
 ## Signals
 
 Use `jotai` for independent, atomic state that must be available globally. Common use-cases for global, atomic state include **User Sessions**, **Theme**
